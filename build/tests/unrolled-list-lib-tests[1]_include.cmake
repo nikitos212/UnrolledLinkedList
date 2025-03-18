@@ -1,0 +1,5 @@
+if(EXISTS "/home/littleking08/ProjectsC++/labwork7-nikitos212/build/tests/unrolled-list-lib-tests[1]_tests.cmake")
+  include("/home/littleking08/ProjectsC++/labwork7-nikitos212/build/tests/unrolled-list-lib-tests[1]_tests.cmake")
+else()
+  add_test(unrolled-list-lib-tests_NOT_BUILT unrolled-list-lib-tests_NOT_BUILT)
+endif()
