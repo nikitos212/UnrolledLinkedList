@@ -138,12 +138,19 @@ void unrolled_list<T, NodeMaxSize, Allocator>::clear_node(Node* cur) noexcept{
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
 unrolled_list<T, NodeMaxSize, Allocator>::unrolled_list( const unrolled_list& other) {
-    
+    start_ = other.start_;
+    end_ = other.end_;
+    cur_ = other.cur_;
+    size_ = other.size_;
 }
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
 unrolled_list<T, NodeMaxSize, Allocator>::unrolled_list( const unrolled_list& other, const Allocator& alloc ) {
-    
+    NodeAllocator node_alloc(alloc);
+    start_ = other.start_;
+    end_ = other.end_;
+    cur_ = other.cur_;
+    size_ = other.size_;
 }
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
@@ -167,23 +174,68 @@ unrolled_list<T, NodeMaxSize, Allocator>::~unrolled_list() {
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
 unrolled_list<T, NodeMaxSize, Allocator>::reference unrolled_list<T, NodeMaxSize, Allocator>::operator=( const_reference other ) {
-    
+    start_ = other.start_;
+    end_ = other.end_;
+    cur_ = other.cur_;
+    size_ = other.size_;
 }
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
 void unrolled_list<T, NodeMaxSize, Allocator>::assign( size_type count, const_reference value ) {
-    
+    clear();
+    Node* newNode = create_node();
+    start_ = newNode;
+    end_ = newNode;
+    cur_ = newNode;
+    try {
+        for (size_t i = 0; i < count; ++i) {
+            push_back(value);
+        }
+    } catch (...) {
+        clear();
+        throw;
+    }
+
+    return;
 }
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
 template< class InputIt >
 void unrolled_list<T, NodeMaxSize, Allocator>::assign( InputIt first, InputIt last ) {
-    
+    clear();
+    Node* newNode = create_node();
+    start_ = newNode;
+    end_ = newNode;
+    cur_ = newNode;
+    try {
+        for (auto it = first; first != last; ++it) {
+            push_back(*it);
+        }
+    } catch (...) {
+        clear();
+        throw;
+    }
+
+    return;
 }
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
 void unrolled_list<T, NodeMaxSize, Allocator>::assign( std::initializer_list<T> ilist ) {
-    
+    clear();
+    Node* newNode = create_node();
+    start_ = newNode;
+    end_ = newNode;
+    cur_ = newNode;
+    try {
+        for (auto it : ilist) {
+            push_back(it);
+        }
+    } catch (...) {
+        clear();
+        throw;
+    }
+
+    return;
 }
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
@@ -314,51 +366,215 @@ unrolled_list<T, NodeMaxSize, Allocator>::size_type unrolled_list<T, NodeMaxSize
 }
 
 template<typename T, size_t NodeMaxSize, typename Allocator> 
-unrolled_list<T, NodeMaxSize, Allocator>::iterator unrolled_list<T, NodeMaxSize, Allocator>::insert( const_iterator pos, const T& value ){
+unrolled_list<T, NodeMaxSize, Allocator>::iterator unrolled_list<T, NodeMaxSize, Allocator>::insert( iterator pos, const T& value ){
+    ++size_;
+    if (!pos.get_pointer()) {
+        return pos;
+    }
+    Node* curNode = pos.getNodePointer();
+    if (curNode->numElements == NodeMaxSize) {
+        Node* nextNode = create_node();
+        if (curNode->next) {
+            curNode->next->prev = nextNode;
+            nextNode->next = curNode->next;
+        } else {
+            end_ = nextNode;
+            cur_ = nextNode;
+        }
+        curNode->next  = nextNode;
+        nextNode->prev = curNode;
+        new (&nextNode->elements[NodeMaxSize / 2]) value_type(curNode->elements[NodeMaxSize - 1]);
+        ++nextNode->numElements;
+        --curNode->numElements;
+        value_type cur = *(pos.get_pointer());
+        value_type next = *(pos.get_pointer() + 1);
+        for(auto i  = pos.get_pointer(); i != &(curNode->elements[curNode->numElements - 1]) + 1; ++i) {
+            next = *(i + 1);
+            new (i + 1) value_type(cur);
+            cur = next;
+        }
+        new (pos.get_pointer()) value_type(value);
+        pointer ptr = pos.get_pointer();
+        Node* node_ptr = pos.getNodePointer();
+        for(size_t i  = NodeMaxSize - NodeMaxSize / 2; i <= curNode->numElements; ++i) {
+            new (&nextNode->elements[i - (NodeMaxSize - NodeMaxSize / 2)]) value_type(curNode->elements[i]);
+            ++nextNode->numElements;
+            if (&curNode->elements[i] == pos.get_pointer()) {
+                ptr = &nextNode->elements[i - NodeMaxSize - NodeMaxSize / 2];
+                node_ptr = nextNode;
+            }
+        }
+        curNode->numElements -= (curNode->numElements - (NodeMaxSize - NodeMaxSize / 2));
 
+        return iterator(node_ptr, ptr);
+    } else {
+        ++curNode->numElements;
+        value_type cur = *(pos.get_pointer());
+        value_type next = *(pos.get_pointer() + 1);
+        for(auto i  = pos.get_pointer(); i != &(curNode->elements[curNode->numElements - 1]) + 1; ++i) {
+            next = *(i + 1);
+            new (i + 1) value_type(cur);
+            cur = next;
+        }
+        new (pos.get_pointer()) value_type(value);
+
+        return pos;
+    }   
+}
+
+template<typename T, size_t NodeMaxSize, typename Allocator> 
+unrolled_list<T, NodeMaxSize, Allocator>::iterator unrolled_list<T, NodeMaxSize, Allocator>::insert( const_iterator pos, const T& value ){
+    ++size_;
+    if (!pos.get_pointer()) {
+        return iterator(pos.getNodePointer(), pos.get_pointer());
+    }
+    Node* curNode = pos.getNodePointer();
+    if (curNode->numElements == NodeMaxSize) {
+        Node* nextNode = create_node();
+        if (curNode->next) {
+            curNode->next->prev = nextNode;
+            nextNode->next = curNode->next;
+        } else {
+            end_ = nextNode;
+            cur_ = nextNode;
+        }
+        curNode->next  = nextNode;
+        nextNode->prev = curNode;
+        new (&nextNode->elements[NodeMaxSize / 2]) value_type(curNode->elements[NodeMaxSize - 1]);
+        ++nextNode->numElements;
+        --curNode->numElements;
+        value_type cur = *(pos.get_pointer());
+        value_type next = *(pos.get_pointer() + 1);
+        for(auto i  = pos.get_pointer(); i != &(curNode->elements[curNode->numElements - 1]) + 1; ++i) {
+            next = *(i + 1);
+            new (i + 1) value_type(cur);
+            cur = next;
+        }
+        new (pos.get_pointer()) value_type(value);
+        pointer ptr = pos.get_pointer();
+        Node* node_ptr = pos.getNodePointer();
+        for(size_t i  = NodeMaxSize - NodeMaxSize / 2; i <= curNode->numElements; ++i) {
+            new (&nextNode->elements[i - (NodeMaxSize - NodeMaxSize / 2)]) value_type(curNode->elements[i]);
+            ++nextNode->numElements;
+            if (&curNode->elements[i] == pos.get_pointer()) {
+                ptr = &nextNode->elements[i - NodeMaxSize - NodeMaxSize / 2];
+                node_ptr = nextNode;
+            }
+        }
+        curNode->numElements -= (curNode->numElements - (NodeMaxSize - NodeMaxSize / 2));
+
+        return iterator(node_ptr, ptr);
+    } else {
+        ++curNode->numElements;
+        value_type cur = *(pos.get_pointer());
+        value_type next = *(pos.get_pointer() + 1);
+        for(auto i  = pos.get_pointer(); i != &(curNode->elements[curNode->numElements - 1]) + 1; ++i) {
+            next = *(i + 1);
+            new (i + 1) value_type(cur);
+            cur = next;
+        }
+        new (pos.get_pointer()) value_type(value);
+
+        return iterator(pos.getNodePointer(), pos.get_pointer());
+    }   
 }
 
 template<typename T, size_t NodeMaxSize, typename Allocator> 
 unrolled_list<T, NodeMaxSize, Allocator>::iterator unrolled_list<T, NodeMaxSize, Allocator>::insert( const_iterator pos, size_type count, const T& value ){
+    bool isFirst = true;
+    iterator iter;
+    for (size_t i = 0; i < count; ++i) {
+        if (isFirst) {
+            iter = insert(pos, value);
+            isFirst = false;
+        } else {
+            insert(pos, value);
+        }
+    }
 
+    return  iter;
 }
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
 template<class InputIt>
 unrolled_list<T, NodeMaxSize, Allocator>::iterator unrolled_list<T, NodeMaxSize, Allocator>::insert( const_iterator pos, InputIt first, InputIt last ) {
+    bool isFirst = true;
+    iterator iter;
+    for (auto i = first; first != last; ++first) {
+        if (isFirst) {
+            iter = insert(pos, *i);
+            isFirst = false;
+        } else {
+            insert(pos, *i);
+        }
+    }
 
+    return  iter;
 }
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
 unrolled_list<T, NodeMaxSize, Allocator>::iterator unrolled_list<T, NodeMaxSize, Allocator>::erase( const_iterator pos ) noexcept{
+    --size_;
+    if (!pos.get_pointer()) {
+        return iterator(pos.getNodePointer(), pos.get_pointer());
+    }
+    Node* curNode = pos.getNodePointer();
+    --curNode->numElements;
+    if (curNode->numElements == 0) {
+        if (curNode == start_ && curNode != end_) {
+            Node* next = curNode->next;
+            clear_node(curNode);
+            start_ = next;
+            start_->prev = nullptr;
+        } else if (curNode != start_ && curNode == end_) {
+            Node* prev = curNode->prev;
+            clear_node(curNode);
+            end_ = prev;
+            end_->next = nullptr;
+        }  else if (curNode != start_ && curNode != end_) {
+            Node* next = curNode->next;
+            Node* prev = curNode->prev;
+            clear_node(curNode);
+            next->prev = prev;
+            prev->next = next;
+        }
+    } else {
+        for (auto it = pos.get_pointer(); it != &curNode->elements[curNode->numElements - 1]; ++it) {
+            new (it) value_type(*(it + 1));
+        }
+    }
+
     return pos;
 }
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
 unrolled_list<T, NodeMaxSize, Allocator>::iterator unrolled_list<T, NodeMaxSize, Allocator>::erase( const_iterator first, const_iterator last ) noexcept{
+    for (auto it = first; first != last; ++it) {
+        erase(it);
+    }
+
     return first;
 }
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
 void unrolled_list<T, NodeMaxSize, Allocator>::push_back( const_reference& value ) {
     ++size_;
-    int& index = cur_->numElements;
-    if (index != NodeMaxSize) {
-        new (&cur_->elements[index]) value_type(value);
-        ++index; 
+    if (cur_->numElements != NodeMaxSize) {
+        new (&cur_->elements[cur_->numElements]) value_type(value);
+        ++cur_->numElements; 
     } else {
         Node* CurNode;
-        if (cur_->next == nullptr) {
+        if (!cur_->next) {
             CurNode = create_node();
             end_ = CurNode;
         } else {
             CurNode = cur_->next;
         }
         size_t half_index = (NodeMaxSize % 2 == 0) ? NodeMaxSize / 2 : NodeMaxSize / 2 + 1;
-        for(size_t i  = half_index; i < index; ++i) {
+        for(size_t i  = half_index; i < cur_->numElements; ++i) {
             new (&CurNode->elements[i - half_index]) value_type(cur_->elements[i]);
         }
-        index = half_index;
+        cur_->numElements = half_index;
         CurNode->numElements = NodeMaxSize - half_index;
         cur_->next = CurNode;
         CurNode->prev = cur_;
@@ -410,11 +626,9 @@ void unrolled_list<T, NodeMaxSize, Allocator>::push_front( const_reference& valu
         CurNode->next = start_;
         start_->prev = CurNode;
         start_ = CurNode;
-        size_t index = 0;
         while (start_->next->numElements  > NodeMaxSize - NodeMaxSize / 2) {
-            new (&start_->elements[start_->numElements]) value_type(start_->next->elements[index]);
+            new (&start_->elements[start_->numElements]) value_type(start_->next->elements[0]);
             ++start_->numElements;
-            ++index;
             for (size_t i = 1; i < start_->next->numElements; ++i) {
                 new (&start_->next->elements[i - 1]) value_type(start_->next->elements[i]);
             }
@@ -489,17 +703,58 @@ void unrolled_list<T, NodeMaxSize, Allocator>::pop_front() noexcept{
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
 void unrolled_list<T, NodeMaxSize, Allocator>::resize( size_type count ){
+    if (count == size_) {
+        return;
+    }
+    if (count > size_) {
+        try {
+            for (size_t i = 0; i < (count - size_); ++i) {
+                push_back(0);
+            }
+        } catch (...) {
+            clear();
+            throw;
+        }
+    } else {
+        for (size_t i = 0; i < (size_ - count); ++i) {
+            pop_back();
+        }
+    }
 
+    return;
 }
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
 void unrolled_list<T, NodeMaxSize, Allocator>::resize( size_type count, const_reference& value ){
+    if (count == size_) {
+        return;
+    }
+    if (count > size_) {
+        try {
+            for (size_t i = 0; i < (count - size_); ++i) {
+                push_back(value);
+            }
+        } catch (...) {
+            clear();
+            throw;
+        }
+    } else {
+        for (size_t i = 0; i < (size_ - count); ++i) {
+            pop_back();
+        }
+    }
 
+    return;
 }
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
 void unrolled_list<T, NodeMaxSize, Allocator>::swap( unrolled_list& other ) noexcept{
+    std::swap(start_, other.start_);
+    std::swap(end_, other.end_);
+    std::swap(cur_, other.cur_);
+    std::swap(size_, other.size_);
 
+    return;
 }
 
 template<typename T, size_t NodeMaxSize, typename Allocator>

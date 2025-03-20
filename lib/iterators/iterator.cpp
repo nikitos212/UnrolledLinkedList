@@ -1,5 +1,6 @@
 #include "unrolled_list.h"
-#include <iterator>
+#include <cstddef>
+#include <iostream>
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
 class unrolled_list<T, NodeMaxSize, Allocator>::iterator {
@@ -48,6 +49,19 @@ class unrolled_list<T, NodeMaxSize, Allocator>::iterator {
             return tmp;
         }
 
+        iterator& operator+=(size_t inc) {
+            for (size_t i = 0; i < inc; ++i) {
+                if (node_->numElements >= 1 && ptr_ == &node_->elements[node_->numElements - 1] && node_->next) {
+                    node_ = node_->next;
+                    ptr_ = &(node_->elements[0]);
+                } else {
+                    ++ptr_;
+                }
+            }
+
+            return *this;
+        }
+
         iterator& operator--() {
             if (ptr_ == &node_->elements[0] && node_->prev) {
                 node_ = node_->prev;
@@ -71,6 +85,19 @@ class unrolled_list<T, NodeMaxSize, Allocator>::iterator {
             return tmp;
         }
 
+        iterator& operator-=(size_t dec) {
+            for (size_t i = 0; i < dec; ++i) {
+                if (ptr_ == &node_->elements[0] && node_->prev) {
+                    node_ = node_->prev;
+                    ptr_ = &(node_->elements[node_->numElements - 1]);
+                } else {
+                    --ptr_;
+                }
+            }
+
+            return *this;
+        }
+
         bool operator==(const iterator& other) const{
             return ptr_  == other.ptr_;
         }
@@ -85,8 +112,14 @@ class unrolled_list<T, NodeMaxSize, Allocator>::iterator {
 
             return *this;
         }
-    
-        pointer base() const { return node_; }
+
+        NodePointer& getNodePointer() {
+            return node_;
+        }
+
+        pointer& get_pointer() {
+            return ptr_;
+        }
 
         private:
             NodePointer node_;

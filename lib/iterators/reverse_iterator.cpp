@@ -47,6 +47,19 @@ class unrolled_list<T, NodeMaxSize, Allocator>::reverse_iterator {
             return tmp;
         }
 
+        reverse_iterator& operator-=(size_t inc) {
+            for (size_t i = 0; i < inc; ++i) {
+                if (node_->numElements >= 1 && ptr_ == &node_->elements[node_->numElements - 1] && node_->next) {
+                    node_ = node_->next;
+                    ptr_ = &(node_->elements[0]);
+                } else {
+                    ++ptr_;
+                }
+            }
+
+            return *this;
+        }
+
         reverse_iterator& operator++() {
             if (ptr_ == &node_->elements[0] && node_->prev) {
                 node_ = node_->prev;
@@ -70,6 +83,19 @@ class unrolled_list<T, NodeMaxSize, Allocator>::reverse_iterator {
             return tmp;
         }
 
+        reverse_iterator& operator+=(size_t inc) {
+            for (size_t i = 0; i < inc; ++i) {
+                if (ptr_ == &node_->elements[0] && node_->prev) {
+                    node_ = node_->prev;
+                    ptr_ = &(node_->elements[node_->numElements - 1]);
+                } else {
+                    --ptr_;
+                }
+            }
+
+            return *this;
+        }
+
         bool operator==(const reverse_iterator& other) const{
             return ptr_  == other.ptr_;
         }
@@ -85,7 +111,13 @@ class unrolled_list<T, NodeMaxSize, Allocator>::reverse_iterator {
             return *this;
         }
     
-        pointer base() const { return node_; }
+        NodePointer& getNodePointer() {
+            return node_;
+        }
+
+        pointer& get_pointer() {
+            return ptr_;
+        }
 
         private:
             NodePointer node_;

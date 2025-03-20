@@ -3,7 +3,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <vector>
 #include <list>
 
 /*
@@ -56,7 +55,7 @@ TEST(UnrolledLinkedList, pushMixed) {
     ASSERT_THAT(unrolled_list, ::testing::ElementsAreArray(std_list));
 }
 
-/* TEST(UnrolledLinkedList, insertAndPushMixed) {
+TEST(UnrolledLinkedList, insertAndPushMixed) {
     std::list<int> std_list;
     unrolled_list<int> unrolled_list;
 
@@ -78,7 +77,7 @@ TEST(UnrolledLinkedList, pushMixed) {
     }
 
     ASSERT_THAT(unrolled_list, ::testing::ElementsAreArray(std_list));
-} */
+}
 
 TEST(UnrolledLinkedList, popFrontBack) {
     std::list<int> std_list;

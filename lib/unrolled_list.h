@@ -84,6 +84,7 @@ class unrolled_list {
     void clear () noexcept;
     void clear_node (Node* cur) noexcept;
 
+    iterator insert( iterator pos, const T& value );
     iterator insert( const_iterator pos, const T& value );
     iterator insert( const_iterator pos, size_type count, const T& value );
     template<class InputIt>
@@ -106,3 +107,14 @@ class unrolled_list {
 
     Node* create_node ();
 };
+
+namespace std {
+  template <>
+  struct iterator_traits<unrolled_list<int>::iterator> {
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = int;
+    using difference_type = std::ptrdiff_t;
+    using pointer = int*;
+    using reference = int&;
+  };
+}
