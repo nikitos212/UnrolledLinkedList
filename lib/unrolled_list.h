@@ -18,6 +18,9 @@ class unrolled_list {
     Node* cur_ = nullptr;
     size_t size_ = 0;
 
+    Node* create_node ();
+    void shift_left (Node* memoryNode, Node* curNode, size_t index);
+    void shift_right (Node* memoryNode, Node* curNode, const T& value, size_t index = 0);
 
   public:
     using value_type = T;
@@ -104,8 +107,6 @@ class unrolled_list {
     void swap( unrolled_list& other ) noexcept;
 
     bool operator==( const unrolled_list& rhs ) const;
-
-    Node* create_node ();
 };
 
 namespace std {
