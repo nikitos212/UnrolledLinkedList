@@ -8,6 +8,7 @@ bin/CMakeFiles/unrolled_list.dir/main.cpp.o: /home/littleking08/ProjectsC++/labw
   /home/littleking08/ProjectsC++/labwork7-nikitos212/lib/iterators/reverse_iterator.cpp \
   /home/littleking08/ProjectsC++/labwork7-nikitos212/lib/unrolled_list.cpp \
   /home/littleking08/ProjectsC++/labwork7-nikitos212/lib/unrolled_list.h \
+  /home/littleking08/ProjectsC++/labwork7-nikitos212/lib/allocator/PoolAllocatorNode.cpp \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
@@ -264,12 +265,6 @@ bin/CMakeFiles/unrolled_list.dir/main.cpp.o: /home/littleking08/ProjectsC++/labw
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h:
 
-/usr/include/c++/13/ostream:
-
-/usr/include/c++/13/bits/streambuf_iterator.h:
-
-/usr/include/x86_64-linux-gnu/bits/confname.h:
-
 /usr/include/c++/13/iostream:
 
 /usr/include/c++/13/ext/type_traits.h:
@@ -304,9 +299,9 @@ bin/CMakeFiles/unrolled_list.dir/main.cpp.o: /home/littleking08/ProjectsC++/labw
 
 /usr/include/c++/13/bits/uses_allocator_args.h:
 
-/usr/include/c++/13/bits/atomic_base.h:
-
 /home/littleking08/ProjectsC++/labwork7-nikitos212/lib/iterators/const_reverse_iterator.cpp:
+
+/usr/include/c++/13/bits/atomic_base.h:
 
 /usr/include/c++/13/bits/uses_allocator.h:
 
@@ -396,6 +391,14 @@ bin/CMakeFiles/unrolled_list.dir/main.cpp.o: /home/littleking08/ProjectsC++/labw
 
 /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h:
 
+/usr/include/c++/13/bits/ptr_traits.h:
+
+/usr/include/c++/13/bits/ranges_uninitialized.h:
+
+/usr/include/x86_64-linux-gnu/c++/13/bits/c++locale.h:
+
+/usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h:
+
 /usr/include/c++/13/bits/basic_string.h:
 
 /usr/include/x86_64-linux-gnu/bits/endianness.h:
@@ -474,14 +477,6 @@ bin/CMakeFiles/unrolled_list.dir/main.cpp.o: /home/littleking08/ProjectsC++/labw
 
 /usr/include/c++/13/bits/locale_classes.tcc:
 
-/usr/include/c++/13/bits/ranges_uninitialized.h:
-
-/usr/include/c++/13/bits/ptr_traits.h:
-
-/usr/include/x86_64-linux-gnu/c++/13/bits/c++locale.h:
-
-/usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h:
-
 /usr/include/alloca.h:
 
 /usr/include/c++/13/bits/stl_algobase.h:
@@ -496,9 +491,17 @@ bin/CMakeFiles/unrolled_list.dir/main.cpp.o: /home/littleking08/ProjectsC++/labw
 
 /usr/include/c++/13/bits/hash_bytes.h:
 
-/usr/include/c++/13/cwctype:
+/home/littleking08/ProjectsC++/labwork7-nikitos212/lib/allocator/PoolAllocatorNode.cpp:
 
 /usr/include/c++/13/backward/auto_ptr.h:
+
+/usr/include/c++/13/cwctype:
+
+/usr/include/c++/13/bits/streambuf_iterator.h:
+
+/usr/include/c++/13/ostream:
+
+/usr/include/x86_64-linux-gnu/bits/confname.h:
 
 /usr/include/c++/13/bits/cpp_type_traits.h:
 
@@ -550,6 +553,10 @@ bin/CMakeFiles/unrolled_list.dir/main.cpp.o: /home/littleking08/ProjectsC++/labw
 
 /usr/include/c++/13/bits/invoke.h:
 
+/usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h:
+
+/usr/include/x86_64-linux-gnu/bits/environments.h:
+
 /usr/include/c++/13/streambuf:
 
 /usr/include/c++/13/bits/memory_resource.h:
@@ -583,10 +590,6 @@ bin/CMakeFiles/unrolled_list.dir/main.cpp.o: /home/littleking08/ProjectsC++/labw
 /usr/include/c++/13/bits/nested_exception.h:
 
 /usr/include/c++/13/tuple:
-
-/usr/include/x86_64-linux-gnu/bits/environments.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h:
 
 /usr/include/c++/13/type_traits:
 

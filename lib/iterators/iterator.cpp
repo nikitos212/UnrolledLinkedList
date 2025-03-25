@@ -1,6 +1,5 @@
 #include "unrolled_list.h"
 #include <cstddef>
-#include <iostream>
 
 template<typename T, size_t NodeMaxSize, typename Allocator>
 class unrolled_list<T, NodeMaxSize, Allocator>::iterator {

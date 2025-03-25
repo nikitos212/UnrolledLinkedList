@@ -9,6 +9,7 @@ bin/CMakeFiles/unrolled_list.dir/main.cpp.o
  /home/littleking08/ProjectsC++/labwork7-nikitos212/lib/iterators/reverse_iterator.cpp
  /home/littleking08/ProjectsC++/labwork7-nikitos212/lib/unrolled_list.cpp
  /home/littleking08/ProjectsC++/labwork7-nikitos212/lib/unrolled_list.h
+ /home/littleking08/ProjectsC++/labwork7-nikitos212/lib/allocator/PoolAllocatorNode.cpp
  /usr/include/alloca.h
  /usr/include/asm-generic/errno-base.h
  /usr/include/asm-generic/errno.h

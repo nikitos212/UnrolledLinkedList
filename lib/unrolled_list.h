@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <initializer_list>
 #include <memory>
+#include "lib/allocator/PoolAllocatorNode.cpp"
 
 template<typename T, size_t NodeMaxSize = 10, typename Allocator = std::allocator<T>>
 class unrolled_list {
@@ -41,7 +42,7 @@ class unrolled_list {
 
     explicit unrolled_list();
     explicit unrolled_list( const Allocator& alloc );
-    explicit unrolled_list( size_type count, const Allocator& alloc = Allocator() );
+    explicit unrolled_list( size_type count, const Allocator& = Allocator() );
     unrolled_list( size_type count, const_reference value, const Allocator& alloc = Allocator() );
     template< class InputIt >
     unrolled_list( InputIt first, InputIt last, const Allocator& alloc = Allocator() );

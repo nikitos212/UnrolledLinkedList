@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include "../lib/unrolled_list.cpp"
 #include "../lib/unrolled_list.h"
 
@@ -66,6 +67,7 @@ int main(int argc, char** argv) {
     
 
     std::cout << *(unrolled.cbegin().get_pointer() += 100) << '\n';
+    //std::allocator_traits<std::allocator<int>>::rebind_traits<>
     
     return 0;
 }
